@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 from . import Checker
+from functions import *
 from collections import OrderedDict
 from json import JSONDecoder
 
@@ -35,6 +36,7 @@ class CheckMenu(Checker):
             self.warn("Each 'dict' should have a 'command' or 'children' key.")
 
         for key, value in menu.items():
+            # run value specific tests
             if key not in self.ALLOWED_KEYS.keys():
                 self.fail('An unallowed key has been found',
                     'The key is {!r} and has for value {!r}'.format(key, value))
@@ -70,8 +72,8 @@ class CheckMenu(Checker):
             try:
                 menus = json_parse(self.get_file_content(file))
             except ValueError as error:
-                self.fail('The file "{}" is not a valid JSON file.'.format(self.current_file),
-                          "Trailling commas and comments aren't allowed",
+                self.fail('Invalid JSON file'.format(self.current_file),
+                          "Trailling commas and comments aren't allowed.",
                           "Error message: {}".format(error))
             else:
                 self.check_menus(menus)

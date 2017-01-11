@@ -80,6 +80,8 @@ class Checker:
         render(text, 'Failer', Checker.fails)
         text.append('')
         render(text, 'Warners', Checker.warns)
+        text += ['', 'This package shows you commons errors. To learn how to get '
+                      'rid of them, please refer to the wiki']
 
         # CSW: ignore
         print('\n'.join(text))
