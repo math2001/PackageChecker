@@ -1,0 +1,23 @@
+[
+    {
+        "caption": "hello",
+        "command": "save"
+    },
+    {
+        "caption": "Parent",
+        "children": [
+            {
+                "caption": "Hello",
+                "command": "world"
+            },
+            {
+                "caption": "world",
+                "children": [
+                    {
+
+                    }
+                ]
+            }
+        ]
+    }
+]
