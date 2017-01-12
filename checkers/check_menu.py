@@ -3,12 +3,6 @@
 from . import Checker
 from functions import *
 from collections import OrderedDict
-from json import JSONDecoder
-
-json_decoder = JSONDecoder(object_pairs_hook=OrderedDict)
-
-def json_parse(json):
-    return json_decoder.decode(json)
 
 class CheckMenu(Checker):
 
@@ -30,26 +24,21 @@ class CheckMenu(Checker):
                       "in the same 'dict'.",
                       "The caption for this item is {!r}".format(menu.get('caption',
                                                                           '<not specified>')))
-        elif 'caption' not in menu:
-            self.warn("Each 'dict' should have a 'caption' key")
-        elif 'children' not in menu and 'command' not in menu:
+        elif 'children' not in menu and 'command' not in menu and menu.get('caption', None) != '-':
             self.warn("Each 'dict' should have a 'command' or 'children' key.")
 
         for key, value in menu.items():
             # run value specific tests
             if key not in self.ALLOWED_KEYS.keys():
                 self.fail('An unallowed key has been found',
-                    'The key is {!r} and has for value {!r}'.format(key, value))
-                return
+                    'The key is {!r} and has for value {!r}'.format(key, value),
+                    "Note: the key's are case sensitive")
             elif type(value).__name__ != self.ALLOWED_KEYS[key]:
                 self.fail("The key '{}' isn't of the right type.".format(key),
                     "It should be a {}, got a {}".format(self.ALLOWED_KEYS[key],
                         type(value).__name__))
-                return
             elif key == 'children':
                 self.check_menus(menu['children'])
-
-
 
     def check_menus(self, menus):
         if not isinstance(menus, list):
