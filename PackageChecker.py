@@ -8,6 +8,7 @@ import subprocess
 import tempfile
 
 try:
+    # for Sublime Text, not implemented for now
     from .checkers import CHECKERS
     from .get_package_infos import get_package_infos
     from .functions import *
@@ -64,8 +65,8 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--pull-request', action='store_true', help="It's a URL to a pull request")
     parser.add_argument('-q', '--quiet', action="store_true", help='Output the strict minimum '
                                                                    '(fails and warning)')
-    args = parser.parse_args(['C:/python/package_control/sample_packages/keymaps'])
+    args = parser.parse_args(['C:/python/package_control/sample_packages/scripts'])
     # CSW: ignore
-    print("PackageChecker.py", 'overwrite args: remove the list when in production')
+    print("PackageChecker.py", 'overwrite args: remove the list when in production\n')
     args.path = os.path.normpath(args.path)
     check(args.path, args.pull_request, args.quiet)

@@ -68,11 +68,13 @@ class CheckKeymap(Checker):
             platforms = [platform]
 
         bindings = {
-            'Linux': jsonc.loads(self.get_file_content(self.get_static('Default (Linux).sublime-keymap'))),
-            'Windows': jsonc.loads(self.get_file_content(self.get_static('Default (Windows).sublime-keymap'))),
-            'OSX': jsonc.loads(self.get_file_content(self.get_static('Default (OSX).sublime-keymap')))
+            'Linux': jsonc.loads(
+                self.get_file_content(self.get_static('Default (Linux).sublime-keymap'))),
+            'Windows': jsonc.loads(
+                self.get_file_content(self.get_static('Default (Windows).sublime-keymap'))),
+            'OSX': jsonc.loads(
+                self.get_file_content(self.get_static('Default (OSX).sublime-keymap')))
         }
-
 
         for binding in pck_keymaps:
             for pck_key, pck_value in binding.items():
