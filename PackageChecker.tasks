@@ -3,3 +3,5 @@
  ☐ keymap check platform
  ☐ error location: use a location method
  ☐ return obj instead of string
+ ☐ web interface
+ ☐ ignore checker

@@ -24,6 +24,10 @@ __all__ = 'check',
 
 def clone(tempdir, url, quiet):
     name = os.path.basename(url)
+    if os.path.exists(os.path.join(tempdir, name)):
+        # CSW: ignore
+        if not quiet: print('Already cloned. Using it again')
+        return os.path.join(tempdir, name)
     # CSW: ignore
     if not quiet: print('Cloning {} into {!r}'.format(url, name))
     cmd = ['git', 'clone', '--depth=1', '--branch=master', url, name]
@@ -50,6 +54,8 @@ def check(path, is_pull_request, quiet):
     elif path.startswith(('https://', 'http://')):
         path = clone(tempdir, path, quiet)
 
+    path = os.path.normpath(path)
+
     for checker_name in CHECKERS:
         module = importlib.import_module('.check_' + checker_name,
                                          package="checkers")
@@ -65,8 +71,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--pull-request', action='store_true', help="It's a URL to a pull request")
     parser.add_argument('-q', '--quiet', action="store_true", help='Output the strict minimum '
                                                                    '(fails and warning)')
-    args = parser.parse_args(['C:/python/package_control/sample_packages/scripts'])
+    args = parser.parse_args()
     # CSW: ignore
     print("PackageChecker.py", 'overwrite args: remove the list when in production\n')
-    args.path = os.path.normpath(args.path)
     check(args.path, args.pull_request, args.quiet)
