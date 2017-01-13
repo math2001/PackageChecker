@@ -46,26 +46,30 @@ class CheckKeymap(Checker):
                 - pck_keymaps: a decoded JSON keymap file
                 - platform: the platform to compare against (can be *)
         """
-        bindings = {
-            'Linux': jsonc.loads(self.get_file_content(self.get_static('Default (Linux).sublime-keymap'))),
-            'Windows': jsonc.loads(self.get_file_content(self.get_static('Default (Windows).sublime-keymap'))),
-            'OSX': jsonc.loads(self.get_file_content(self.get_static('Default (OSX).sublime-keymap')))
-        }
+        if not isinstance(pck_keymaps, list):
+            return self.fail('Keymaps must be lists. Got {!r} instead'.format(name(pck_keymaps)))
 
         if platform == '*':
             platforms = ['Linux', 'Windows', 'OSX']
         else:
             platforms = [platform]
 
+        bindings = {
+            'Linux': jsonc.loads(self.get_file_content(self.get_static('Default (Linux).sublime-keymap'))),
+            'Windows': jsonc.loads(self.get_file_content(self.get_static('Default (Windows).sublime-keymap'))),
+            'OSX': jsonc.loads(self.get_file_content(self.get_static('Default (OSX).sublime-keymap')))
+        }
+
+
         for binding in pck_keymaps:
             for pck_key, pck_value in binding.items():
                 if pck_key not in self.ALLOWED_KEYS:
                     self.fail("Found an unallowed key",
                               "The key is {!r}".format(pck_key))
-                elif type(pck_value).__name__ != self.ALLOWED_KEYS[pck_key]:
+                elif name(pck_value) != self.ALLOWED_KEYS[pck_key]:
                     self.fail('Found an unallowed value for the key {!r}'.format(pck_key),
                               "Expected a {!r}, got a {!r}".format(self.ALLOWED_KEYS[pck_key],
-                                                                   type(pck_value).__name__))
+                                                                   name(pck_value)))
                 if pck_key == 'context':
                     for condition in binding['context']:
                         for ctx_key, ctx_value in condition.items():
@@ -73,11 +77,11 @@ class CheckKeymap(Checker):
                                 self.fail('Found an unallowed context key',
                                           'The key is {!r}'.format(ctx_key))
                             elif self.ALLOWED_CONTEXT_KEYS[ctx_key] is not None \
-                                and type(ctx_value).__name__ != self.ALLOWED_CONTEXT_KEYS[ctx_key]:
+                                and name(ctx_value) != self.ALLOWED_CONTEXT_KEYS[ctx_key]:
                                 self.fail('Found an unallowed value for the context key '
                                           + repr(ctx_key), "Expected a {!r}, got a {!r}".format(
                                                                  self.ALLOWED_CONTEXT_KEYS[ctx_key],
-                                                                 type(ctx_value).__name__))
+                                                                 name(ctx_value)))
 
             if 'keys' not in binding:
                 self.fail("A key binding needs a 'keys' key. Didn't find any.")
@@ -99,7 +103,8 @@ class CheckKeymap(Checker):
 
 
                         else:
-                            self.fail('Overwrites the {} default bindings unconditionally'.format(platform),
+                            self.fail('Overwrites the {} default bindings unconditionally'.format(
+                                                                                          platform),
                                       'The keys are: {!r}'.format(binding['keys']),
                                       "The default command {!r} is overwritten by {!r}".format(
                                                                         default_binding['command'],

@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 import os.path
+from functions import *
 
 CHECKERS = 'readme', 'menu', 'messages', 'keymap' # needs to be defined dynamically
 
@@ -18,7 +19,7 @@ class Checker:
         self.name = infos.get('name', None)
 
     def add_msg(self, type, msg, description):
-        getattr(Checker, type).setdefault(self.__class__.__name__, []).append([msg, description])
+        getattr(Checker, type).setdefault(name(self), []).append([msg, description])
 
     def fail(self, msg, *descriptions):
         self.add_msg('fails', msg, '\n'.join(descriptions))
@@ -76,10 +77,10 @@ class Checker:
     def output():
         indentation = ' ' * 4
         def render(text, title, data):
-            text.append('{} ({})'.format(title, len(data)))
+            text.append('{} [{}]'.format(title, len(data)))
             text.append('*' * len(text[-1]))
             for trigger, packs in data.items():
-                text.append(indentation + '> ' + trigger + ' (%i)' % len(packs))
+                text.append(indentation + '> ' + trigger + ' [%i]' % len(packs))
                 for msg, description in packs:
                     text.append(indentation + msg)
                     for line in description.splitlines():

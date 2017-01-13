@@ -2,7 +2,7 @@
 from re import compile as re_comp
 from json import JSONDecoder
 
-__all__ = ['is_valid_command_name', 'json_parse', 'to_camel_case']
+__all__ = 'is_valid_command_name', 'json_parse', 'to_camel_case', 'name'
 
 MATCH_COMMAND_NAME = re_comp('^[a-z][a-z0-9_]+$')
 json_decoder = JSONDecoder()
@@ -15,3 +15,6 @@ def json_parse(json):
 
 def to_camel_case(string):
     return ''.join([bit.title() for bit in string.split('_')])
+
+def name(obj):
+    return type(obj).__name__

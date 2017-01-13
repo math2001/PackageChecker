@@ -33,17 +33,17 @@ class CheckMenu(Checker):
                 self.fail('An unallowed key has been found',
                     'The key is {!r} and has for value {!r}'.format(key, value),
                     "Note: the key's are case sensitive")
-            elif type(value).__name__ != self.ALLOWED_KEYS[key]:
+            elif name(value) != self.ALLOWED_KEYS[key]:
                 self.fail("The key '{}' isn't of the right type.".format(key),
                     "It should be a {}, got a {}".format(self.ALLOWED_KEYS[key],
-                        type(value).__name__))
+                        name(value)))
             elif key == 'children':
                 self.check_menus(menu['children'])
 
     def check_menus(self, menus):
         if not isinstance(menus, list):
             self.fail('Menus should be a list',
-                      'Got an {} in the file {}'.format(type(menu).__name__))
+                      'Got an {} in the file {}'.format(name(menu)))
             return
         for menu in menus:
             self.check_menu(menu)
@@ -51,7 +51,7 @@ class CheckMenu(Checker):
     def fail(self, msg, *descriptions):
         super().fail(msg, *list(descriptions) \
                           + ['- Found in {!r}'.format(self.current_file)])
-        
+
     def warn(self, msg, *descriptions):
         super().warn(msg, *list(descriptions) \
                           + ['- Found in {!r}'.format(self.current_file)])

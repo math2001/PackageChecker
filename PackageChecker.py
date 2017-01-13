@@ -64,7 +64,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--pull-request', action='store_true', help="It's a URL to a pull request")
     parser.add_argument('-q', '--quiet', action="store_true", help='Output the strict minimum '
                                                                    '(fails and warning)')
-    args = parser.parse_args(['c:/users/math/appdata/roaming/sublime text 3/packages/markdownlivepreview'])
+    args = parser.parse_args(['C:/python/package_control/sample_packages/keymaps'])
     # CSW: ignore
     print("PackageChecker.py", 'overwrite args: remove the list when in production')
     args.path = os.path.normpath(args.path)
