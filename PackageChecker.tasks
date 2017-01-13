@@ -1,3 +1,5 @@
  ☐ liscence
  ☐ generate package infos: defines which build's needed
  ☐ keymap check platform
+ ☐ error location: use a location method
+ ☐ return obj instead of string

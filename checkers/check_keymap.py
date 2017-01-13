@@ -16,7 +16,6 @@ class CheckKeymap(Checker):
         'context': 'list',
         'args': 'dict',
         'command': 'str',
-        'key': 'str',
     }
 
     ALLOWED_CONTEXT_KEYS = {
@@ -34,10 +33,24 @@ class CheckKeymap(Checker):
         super().warn(msg, *list(descriptions) \
                           + ['- Found in {!r}'.format(self.current_file)])
 
-    def compare_against(self, base, against):
-        for base_binding in base:
-            for ag_binding in against:
-                pass
+
+    def check_keys(self, keys):
+        """Needs to be improved
+            @params:
+                - keys: ["ctrl+a", "alt+b"]
+        """
+        if not isinstance(keys, list):
+            self.fail('Keys must be a *list* of non-empty strings',
+                      "Got a {!r}".format(name(keys)))
+
+        for bit in keys:
+            if not isinstance(bit, str):
+                self.fail('Keys must be a list of non-empty *strings*',
+                          "Got a {!r}".format(name(bit)))
+            elif name == '':
+                self.fail('Keys must be a list of *non-empty* strings')
+            elif name in ['ctrl', 'alt', 'super', 'shift']:
+                self.fail('Sublime Text does not allow modifiers alone to be a valid combination')
 
 
     def check_keymap_file(self, pck_keymaps, platform):
@@ -64,8 +77,7 @@ class CheckKeymap(Checker):
         for binding in pck_keymaps:
             for pck_key, pck_value in binding.items():
                 if pck_key not in self.ALLOWED_KEYS:
-                    self.fail("Found an unallowed key",
-                              "The key is {!r}".format(pck_key))
+                    self.fail("Found an unallowed key: {!r}".format(pck_key))
                 elif name(pck_value) != self.ALLOWED_KEYS[pck_key]:
                     self.fail('Found an unallowed value for the key {!r}'.format(pck_key),
                               "Expected a {!r}, got a {!r}".format(self.ALLOWED_KEYS[pck_key],
@@ -75,7 +87,7 @@ class CheckKeymap(Checker):
                         for ctx_key, ctx_value in condition.items():
                             if ctx_key not in self.ALLOWED_CONTEXT_KEYS:
                                 self.fail('Found an unallowed context key',
-                                          'The key is {!r}'.format(ctx_key))
+                                          "{!r} isn't allowed".format(ctx_key))
                             elif self.ALLOWED_CONTEXT_KEYS[ctx_key] is not None \
                                 and name(ctx_value) != self.ALLOWED_CONTEXT_KEYS[ctx_key]:
                                 self.fail('Found an unallowed value for the context key '
@@ -84,9 +96,12 @@ class CheckKeymap(Checker):
                                                                  name(ctx_value)))
 
             if 'keys' not in binding:
-                self.fail("A key binding needs a 'keys' key. Didn't find any.")
+                return self.fail("A key binding needs a 'keys' key. Didn't find any.")
             if 'command' not in binding:
-                self.fail("A key binding needs a 'commands' key. Didn't find any.")
+                return self.fail("A key binding needs a 'commands' key. Didn't find any.")
+
+            # even if it fails, there is no need to stop this function: it won't affect anything
+            self.check_keys(binding['keys'])
 
             for platform in platforms:
                 for default_binding in bindings[platform]:
