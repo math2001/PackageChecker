@@ -51,6 +51,7 @@ class CheckMenu(Checker):
     def fail(self, msg, *descriptions):
         super().fail(msg, *list(descriptions) \
                           + ['- Found in {!r}'.format(self.current_file)])
+        
     def warn(self, msg, *descriptions):
         super().warn(msg, *list(descriptions) \
                           + ['- Found in {!r}'.format(self.current_file)])

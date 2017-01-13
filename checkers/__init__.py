@@ -2,7 +2,7 @@
 
 import os.path
 
-CHECKERS = ['readme', 'menu', 'messages'] # needs to be defined dynamically
+CHECKERS = 'readme', 'menu', 'messages', 'keymap' # needs to be defined dynamically
 
 class Checker:
 
@@ -28,8 +28,7 @@ class Checker:
 
     def abs_path(self, path):
         if path.startswith(os.path.sep):
-            raise ValueError('Your path is relative to this package, wherever '
-                             "you are.")
+            raise ValueError("Your path is relative to the tested package, wherever you are.")
         return os.path.join(self.path, path)
 
     def rel_path(self, path):
@@ -66,6 +65,12 @@ class Checker:
             return files
 
         return recursive(base_path, **kwargs)
+
+    def get_static(self, path):
+        if path.startswith(os.path.sep):
+            raise ValueError("Your path is relative to this package, wherever you are.")
+        return os.path.normpath(os.path.join(__file__, '..', '..', 'static', path))
+
 
     @staticmethod
     def output():
