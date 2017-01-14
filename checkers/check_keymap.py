@@ -2,12 +2,12 @@
 
 import json
 import os.path
-from . import Checker
+from . import FileChecker
 from re import compile as re_comp
 from functions import *
 import jsonc
 
-class CheckKeymap(Checker):
+class CheckKeymap(FileChecker):
 
     MATCH_VALID_NAME = re_comp(r'^Default( \((Windows|Linux|OSX)\))?\.sublime-keymap$')
 
@@ -24,15 +24,6 @@ class CheckKeymap(Checker):
         'operand': None,
         'key': 'str'
     }
-
-    def fail(self, msg, *descriptions):
-        super().fail(msg, *list(descriptions) \
-                          + ['- Found in {!r}'.format(self.current_file)])
-
-    def warn(self, msg, *descriptions):
-        super().warn(msg, *list(descriptions) \
-                          + ['- Found in {!r}'.format(self.current_file)])
-
 
     def check_keys(self, keys):
         """Needs to be improved

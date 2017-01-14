@@ -1,10 +1,9 @@
 # -*- encoding: utf-8 -*-
 
-from . import Checker
+from . import FileChecker
 from functions import *
-from collections import OrderedDict
 
-class CheckMenu(Checker):
+class CheckMenu(FileChecker):
 
     ALLOWED_KEYS = {
         'mnemonic': 'str',
@@ -61,14 +60,6 @@ class CheckMenu(Checker):
             return
         for menu in menus:
             self.check_menu(menu)
-
-    def fail(self, msg, *descriptions):
-        super().fail(msg, *list(descriptions) \
-                          + ['- Found in {!r}'.format(self.current_file)])
-
-    def warn(self, msg, *descriptions):
-        super().warn(msg, *list(descriptions) \
-                          + ['- Found in {!r}'.format(self.current_file)])
 
     def run(self):
         for file in self.glob_files(extension='.sublime-menu'):

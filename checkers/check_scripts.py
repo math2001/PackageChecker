@@ -14,6 +14,4 @@ class CheckScripts(Checker):
             except py_compile.PyCompileError as e:
                 e = e.args[2] # the actual SyntaxError
                 self.fail('Syntax Error: File {!r}, line {!r}'.format(file, e.lineno),
-                          e.text.replace('\n', ''),
-                          ' ' * (e.offset - 2) + '^',
-                          'Message: ' + e.msg)
+                        e.text.replace('\n', ''), ' ' * (e.offset - 2) + '^', 'Message: ' + e.msg)

@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 
-from . import Checker
+from . import FileChecker
 from functions import *
 
-class CheckCommands(Checker):
+class CheckCommands(FileChecker):
 
     """Check .sublime-commands files"""
 
@@ -34,14 +34,6 @@ class CheckCommands(Checker):
                                   "caption specified: {!r}".format(item['caption']))
                     elif key == 'args' and value == {}:
                         self.warn("You don't need to specify 'args' if you set it to '{}'")
-
-    def fail(self, msg, *descriptions):
-        super().fail(msg, *list(descriptions) \
-                          + ['- Found in {!r}'.format(self.current_file)])
-
-    def warn(self, msg, *descriptions):
-        super().warn(msg, *list(descriptions) \
-                          + ['- Found in {!r}'.format(self.current_file)])
 
     def run(self):
         for file in self.glob_files(extension='.sublime-commands'):

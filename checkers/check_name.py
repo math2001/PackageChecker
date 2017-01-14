@@ -1,3 +1,3 @@
 # -*- encoding: utf-8 -*-
 
-# not included for now
+# Check the package name (not sublime in it, etc)

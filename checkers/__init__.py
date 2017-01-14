@@ -20,8 +20,7 @@ class Checker:
         self.name = infos.get('name', None)
 
     def add_msg(self, type, msg, description):
-        getattr(Checker, type).setdefault(name(self), []).append(
-            [msg, description] if description else [msg])
+        getattr(Checker, type).setdefault(name(self), []).append([msg, description])
 
     def fail(self, msg, *descriptions):
         self.add_msg('fails', msg, '\n'.join(descriptions))
@@ -105,3 +104,13 @@ class Checker:
             }
             # CSW: ignore
             print(json.dumps(result))
+
+class FileChecker(Checker):
+
+    def fail(self, msg, *descriptions):
+        super().fail(msg, *list(descriptions) \
+                          + ['- Found in {!r}'.format(self.current_file)])
+
+    def warn(self, msg, *descriptions):
+        super().warn(msg, *list(descriptions) \
+                          + ['- Found in {!r}'.format(self.current_file)])
