@@ -12,14 +12,16 @@ class Checker:
     """Every checker inherits from this class.
     It implements every global function"""
 
-    fails = {}
-    warns = {}
-
     def __init__(self, path, infos, is_pull_request):
         self.path = path
         self.labels = infos.get('labels', [])
         self.name = infos.get('name', None)
         self.is_pull_request = is_pull_request
+
+    @staticmethod
+    def reset():
+        Checker.fails = {}
+        Checker.warns = {}
 
     def add_msg(self, type, msg, description):
         getattr(Checker, type).setdefault(name(self), []).append([msg, description])
