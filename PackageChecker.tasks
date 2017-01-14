@@ -1,12 +1,17 @@
  ☐ liscence
  ☐ generate package infos: defines which build's needed
  ☐ keymap check platform
- ☐ error location: use a location method
- ☐ return obj instead of string
  ☐ web interface
  ☐ ignore checker
  ☐ check settings: comment allowed but not trailing commas
  ☐ check tags
  ☐ [keymaps] check that there is a difference between every plat
- ☐ check for `package-metadata.json`
+ ☐ check data: `package-metadata.json`, '*.pyc', '.no-sublime-package'
  ☐ adapt for st user
+ ☐ improve output
+
+
+＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
+Archive:
+ ✔ return obj instead of string @done Sat 14 Jan 2017 at 15:05
+ ✔ error location: use a location method @done Sat 14 Jan 2017 at 15:05

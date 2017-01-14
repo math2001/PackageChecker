@@ -4,7 +4,8 @@ import os.path
 import json
 from functions import *
 
-CHECKERS = 'readme', 'menu', 'scripts', 'messages', 'keymap', 'commands' # needs to be defined dynamically
+# needs to be defined dynamically
+CHECKERS = ('readme', 'menu', 'scripts', 'messages', 'keymap', 'commands', 'package name')
 
 class Checker:
 
@@ -14,10 +15,11 @@ class Checker:
     fails = {}
     warns = {}
 
-    def __init__(self, path, infos):
+    def __init__(self, path, infos, is_pull_request):
         self.path = path
         self.labels = infos.get('labels', [])
         self.name = infos.get('name', None)
+        self.is_pull_request = is_pull_request
 
     def add_msg(self, type, msg, description):
         getattr(Checker, type).setdefault(name(self), []).append([msg, description])
@@ -95,15 +97,13 @@ class Checker:
             text += ['', 'This package shows you commons errors. To learn how to get '
                           'rid of them, please refer to the wiki']
 
-            # CSW: ignore
-            print('\n'.join(text))
+            return '\n'.join(text)
         else:
             result = {
                 'fails': Checker.fails,
                 'warning': Checker.warns
             }
-            # CSW: ignore
-            print(json.dumps(result))
+            return json.dumps(result)
 
 class FileChecker(Checker):
 

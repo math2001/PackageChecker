@@ -57,12 +57,13 @@ def check(path, is_pull_request, quiet, format):
     path = os.path.normpath(path)
 
     for checker_name in CHECKERS:
+        checker_name = checker_name.replace(' ', '_')
         module = importlib.import_module('.check_' + checker_name,
                                          package="checkers")
         Checker = getattr(module, 'Check' + to_camel_case(checker_name))
-        Checker(path, infos).run()
+        Checker(path, infos, is_pull_request).run()
 
-    Checker.output(format=format)
+    return Checker.output(format=format)
 
 if __name__ == '__main__':
     # it's run from the command line
@@ -111,4 +112,5 @@ if __name__ == '__main__':
 
     # CSW: ignore
     print("PackageChecker.py", 'overwrite args: remove the list when in production\n')
-    check(args.path, args.pull_request, args.quiet, 'json' if args.json else 'human')
+    # CSW: ignore
+    print(check(args.path, args.pull_request, args.quiet, 'json' if args.json else 'human'))
