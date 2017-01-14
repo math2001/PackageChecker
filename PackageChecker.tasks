@@ -5,3 +5,7 @@
  ☐ return obj instead of string
  ☐ web interface
  ☐ ignore checker
+ ☐ check settings: comment allowed but not trailing commas
+ ☐ check tags
+ ☐ [keymaps] check that there is a difference between every plat
+ ☐ check for `package-metadata.json`

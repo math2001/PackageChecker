@@ -17,6 +17,20 @@ class CheckMenu(Checker):
         'command': 'str'
     }
 
+    VALID_NAME = [
+        'Main',
+        'Context',
+        'Encoding',
+        'Find in Files',
+        'Indentation',
+        'Line Endings',
+        'Side Bar Mount Point',
+        'Side Bar',
+        'Syntax',
+        'Tab Context',
+        'Widget Context'
+    ]
+
     def check_menu(self, menu):
         """Check one menu: one object"""
         if 'children' in menu and 'command' in menu:

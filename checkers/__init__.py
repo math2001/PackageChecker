@@ -3,7 +3,7 @@
 import os.path
 from functions import *
 
-CHECKERS = 'readme', 'menu', 'scripts', 'messages', 'keymap' # needs to be defined dynamically
+CHECKERS = 'readme', 'menu', 'scripts', 'messages', 'keymap', 'commands' # needs to be defined dynamically
 
 class Checker:
 
