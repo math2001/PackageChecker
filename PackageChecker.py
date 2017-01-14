@@ -76,7 +76,7 @@ def check(args):
         Checker = getattr(module, 'Check' + to_camel_case(checker_name))
         if reset:
             Checker.reset()
-            reset = False
+                reset = False
         Checker(path, infos, is_pull_request).run()
 
     sys.path.pop()
