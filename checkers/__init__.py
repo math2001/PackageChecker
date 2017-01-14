@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 import os.path
+import json
 from functions import *
 
 CHECKERS = 'readme', 'menu', 'scripts', 'messages', 'keymap', 'commands' # needs to be defined dynamically
@@ -19,7 +20,8 @@ class Checker:
         self.name = infos.get('name', None)
 
     def add_msg(self, type, msg, description):
-        getattr(Checker, type).setdefault(name(self), []).append([msg, description])
+        getattr(Checker, type).setdefault(name(self), []).append(
+            [msg, description] if description else [msg])
 
     def fail(self, msg, *descriptions):
         self.add_msg('fails', msg, '\n'.join(descriptions))
@@ -74,24 +76,32 @@ class Checker:
 
 
     @staticmethod
-    def output():
-        indentation = ' ' * 4
-        def render(text, title, data):
-            text.append('{} [{}]'.format(title, len(data)))
-            text.append('*' * len(text[-1]))
-            for trigger, packs in data.items():
-                text.append(indentation + '> ' + trigger + ' [%i]' % len(packs))
-                for msg, description in packs:
-                    text.append(indentation + msg)
-                    for line in description.splitlines():
-                        text.append(indentation * 2 + line)
+    def output(format):
+        if format == 'human':
+            indentation = ' ' * 4
+            def render(text, title, data):
+                text.append('{} [{}]'.format(title, len(data)))
+                text.append('*' * len(text[-1]))
+                for trigger, packs in data.items():
+                    text.append(indentation + '> ' + trigger + ' [%i]' % len(packs))
+                    for msg, description in packs:
+                        text.append(indentation + msg)
+                        for line in description.splitlines():
+                            text.append(indentation * 2 + line)
 
-        text = []
-        render(text, 'Failer', Checker.fails)
-        text.append('')
-        render(text, 'Warners', Checker.warns)
-        text += ['', 'This package shows you commons errors. To learn how to get '
-                      'rid of them, please refer to the wiki']
+            text = []
+            render(text, 'Failer', Checker.fails)
+            text.append('')
+            render(text, 'Warners', Checker.warns)
+            text += ['', 'This package shows you commons errors. To learn how to get '
+                          'rid of them, please refer to the wiki']
 
-        # CSW: ignore
-        print('\n'.join(text))
+            # CSW: ignore
+            print('\n'.join(text))
+        else:
+            result = {
+                'fails': Checker.fails,
+                'warning': Checker.warns
+            }
+            # CSW: ignore
+            print(json.dumps(result))

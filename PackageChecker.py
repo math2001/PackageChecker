@@ -37,7 +37,7 @@ def clone(tempdir, url, quiet):
     return os.path.join(tempdir, name)
 
 
-def check(path, is_pull_request, quiet):
+def check(path, is_pull_request, quiet, format):
 
     tempdir = tempfile.gettempdir()
 
@@ -45,7 +45,7 @@ def check(path, is_pull_request, quiet):
     if not os.path.exists(tempdir):
         os.makedirs(tempdir)
     elif os.path.isfile(tempdir):
-        raise OSError('The tempdir is a file. Please remove {!r}'.format(tempdir))
+        raise OSError('The temp dir is a file. Please remove {!r}'.format(tempdir))
 
     infos = {}
     if is_pull_request:
@@ -62,20 +62,53 @@ def check(path, is_pull_request, quiet):
         Checker = getattr(module, 'Check' + to_camel_case(checker_name))
         Checker(path, infos).run()
 
-    Checker.output()
+    Checker.output(format=format)
 
 if __name__ == '__main__':
+    # it's run from the command line
     parser = argparse.ArgumentParser(prog="PackageChecker", description="Check your Sublime Text "
                                                                         "Packages really simply")
-    parser.add_argument('path', help='Path (or URL) to the package to check.')
+    parser.add_argument('path', nargs="?", help='Path (or URL) to the package to check.')
     parser.add_argument('-p', '--pull-request', action='store_true', help="It's a URL to a pull "
                                                                           "request")
     parser.add_argument('-q', '--quiet', action="store_true", help='Output the strict minimum '
                                                                    '(fails and warning)')
+    parser.add_argument('-j', '--json', action='store_true', help='Output the result in a JSON '
+                                                                  'format.')
     parser.add_argument('-i', '--interactive', action='store_true', help="Run the test "
                             "interactively. If specified, you shouldn't specify *any* other "
                             "argument")
     args = parser.parse_args()
+
+    if args.interactive and (args.pull_request is True or args.quiet is True or args.path is not None):
+        # CSW: ignore
+        print("Interactive mode overwrites every other settings. So, you can't specify any other "
+              "options if you choose interactive mode")
+        parser.print_help()
+        exit(1)
+
+    if args.interactive:
+        if sys.version_info.major == 3:
+            ask = input
+        elif sys.version_info.major == 2:
+            ask = raw_input
+        else:
+            raise SystemError('Unknown version of python. Please update')
+
+        def confirm(msg):
+            ans = ask(msg)
+            if ans.lower() in ('y', 'yes'):
+                return True
+            elif ans.lower() in ('n', 'no'):
+                return False
+            else:
+                return confirm(msg)
+
+        args.path = ask('Path or URL> ')
+        args.quiet = confirm('quiet (y/n)> ')
+        args.pull_request = confirm('is a pull request (y/n)> ')
+        args.json = confirm('Output in a JSON format (y/n)> ')
+
     # CSW: ignore
     print("PackageChecker.py", 'overwrite args: remove the list when in production\n')
-    check(args.path, args.pull_request, args.quiet)
+    check(args.path, args.pull_request, args.quiet, 'json' if args.json else 'human')
