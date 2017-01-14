@@ -50,8 +50,7 @@ class Checker:
             return fp.read()
 
     def glob_files(self, **kwargs):
-        """Need to do a glob function (can't use glob to support ST's python)
-        """
+        """Need to do a glob function (can't use glob to support ST's python)"""
         files = []
         base_path = os.path.join(self.path, kwargs.get('base_path', ''))
         def recursive(path, **kwargs):
@@ -80,11 +79,14 @@ class Checker:
     def output(format):
         if format == 'human':
             indentation = ' ' * 4
+
             def render(text, title, data):
                 text.append('{} [{}]'.format(title, len(data)))
                 text.append('*' * len(text[-1]))
                 for trigger, packs in data.items():
-                    text.append(indentation + '> ' + trigger + ' [%i]' % len(packs))
+                    text.append('')
+                    text.append(indentation + trigger + ' [%i]' % len(packs))
+                    text.append(indentation + '-' * len(text[-1].lstrip()))
                     for msg, description in packs:
                         text.append(indentation + msg)
                         for line in description.splitlines():
