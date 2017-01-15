@@ -129,6 +129,4 @@ if __name__ == '__main__':
         args.json = confirm('Output in a JSON format (y/n)> ')
 
     # CSW: ignore
-    print("PackageChecker.py", 'overwrite args: remove the list when in production\n')
-    # CSW: ignore
     print(check(args))
