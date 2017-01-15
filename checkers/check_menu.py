@@ -47,9 +47,9 @@ class CheckMenu(FileChecker):
                     'The key is {!r} and has for value {!r}'.format(key, value),
                     "Note: the key's are case sensitive")
             elif name(value) != self.ALLOWED_KEYS[key]:
-                self.fail("The key '{}' isn't of the right type.".format(key),
-                    "It should be a {}, got a {}".format(self.ALLOWED_KEYS[key],
-                        name(value)))
+                self.fail('Found an unexpected type',
+                          'For the key {!r}, excepted a {!r}, got a {!r}'.format(key,
+                                                               self.ALLOWED_KEYS[key], name(value)))
             elif key == 'children':
                 self.check_menus(menu['children'])
 
@@ -67,8 +67,9 @@ class CheckMenu(FileChecker):
             try:
                 menus = json_parse(self.get_file_content(file))
             except ValueError as error:
-                self.fail('Invalid JSON file'.format(self.current_file),
-                          "Trailling commas and comments aren't allowed.",
+                self.fail('Invalid JSON file',
+                          "In '{}'".format(self.current_file)
+                          "Trailing commas and comments aren't allowed.",
                           "Error message: {}".format(error))
             else:
                 self.check_menus(menus)
