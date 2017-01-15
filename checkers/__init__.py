@@ -5,7 +5,8 @@ import json
 from functions import *
 
 # needs to be defined dynamically
-CHECKERS = ('readme', 'menu', 'scripts', 'messages', 'keymap', 'commands', 'package name')
+CHECKERS = ('readme', 'menu', 'scripts', 'messages', 'keymap', 'commands', 'package name',
+            'metadata')
 
 class Checker:
 
@@ -47,9 +48,25 @@ class Checker:
     def is_file(self, file_name):
         return os.path.isfile(self.abs_path(file_name))
 
+    def is_folder(self, path):
+        return os.path.isfolder(self.abs_path(path))
+
     def get_file_content(self, file_name):
         with open(self.abs_path(file_name), 'r') as fp:
             return fp.read()
+
+    def glob_folders(self, **kwargs):
+        items = []
+        base_path = os.path.join(self.path, kwargs.get('base_path', ''))
+        def recursive(path, **kwargs):
+            for item in os.listdir(path):
+                if os.path.isdir(os.path.join(path, item)):
+                    if kwargs.get('name', None) == item:
+                        items.append(item)
+                    recursive(os.path.join(path, item), **kwargs)
+            return items
+
+        return recursive(base_path, **kwargs)
 
     def glob_files(self, **kwargs):
         """Need to do a glob function (can't use glob to support ST's python)"""

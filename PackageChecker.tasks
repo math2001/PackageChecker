@@ -6,12 +6,13 @@
  ☐ check settings: comment allowed but not trailing commas
  ☐ check tags
  ☐ [keymaps] check that there is a difference between every plat
- ☐ check data: `package-metadata.json`, '*.pyc', '.no-sublime-package'
  ☐ create wiki
+ ☐ check_keymap: caption must be always the same
 
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+ ✔ check data: `package-metadata.json`, '*.pyc', '.no-sublime-package' @done Sun 15 Jan 2017 at 13:47
  ✔ adapt for st user @done Sun 15 Jan 2017 at 13:19
  ✔ improve output @done Sat 14 Jan 2017 at 16:29
  ✔ return obj instead of string @done Sat 14 Jan 2017 at 15:05

@@ -10,34 +10,34 @@ import tempfile
 sys.path.append(os.path.join(os.path.dirname(__file__)))
 
 try:
-    # for Sublime Text, not implemented for now
     from .checkers import CHECKERS
     from .get_package_infos import get_package_infos
     from .functions import *
+    from .constants import *
 except SystemError:
-    # building
     from checkers import CHECKERS
     from get_package_infos import get_package_infos
     from functions import *
+    from constants import *
 sys.path.pop()
 
 # NEEDS git on your system
 
 __all__ = 'check',
 
-def clone(tempdir, url, quiet):
+def clone(url, quiet):
     name = os.path.basename(url)
-    if os.path.exists(os.path.join(tempdir, name)):
+    if os.path.exists(os.path.join(TEMP_DIR, name)):
         # CSW: ignore
         if not quiet: print('Already cloned. Using it again')
-        return os.path.join(tempdir, name)
+        return os.path.join(TEMP_DIR, name)
     # CSW: ignore
     if not quiet: print('Cloning {} into {!r}'.format(url, name))
     cmd = ['git', 'clone', '--depth=1', '--branch=master', url, name]
-    cmd = subprocess.Popen(cmd, cwd=tempdir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    cmd = subprocess.Popen(cmd, cwd=TEMP_DIR, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # CSW: ignore
     if not quiet: print(cmd.stdout.read().decode())
-    return os.path.join(tempdir, name)
+    return os.path.join(TEMP_DIR, name)
 
 
 def check(args):
@@ -47,20 +47,17 @@ def check(args):
     quiet = args.quiet
     format = 'json' if args.json else 'human'
 
-    tempdir = tempfile.gettempdir()
-
-    tempdir = os.path.join(tempdir, 'SublimeTextPackageChecker')
-    if not os.path.exists(tempdir):
-        os.makedirs(tempdir)
-    elif os.path.isfile(tempdir):
-        raise OSError('The temp dir is a file. Please remove {!r}'.format(tempdir))
+    if not os.path.exists(TEMP_DIR):
+        os.makedirs(TEMP_DIR)
+    elif os.path.isfile(TEMP_DIR):
+        raise OSError('The temp dir is a file. Please remove {!r}'.format(TEMP_DIR))
 
     infos = {}
     if is_pull_request:
         infos = get_package_infos(path)
-        path = clone(tempdir, infos['details'], quiet)
+        path = clone(infos['details'], quiet)
     elif path.startswith(('https://', 'http://')):
-        path = clone(tempdir, path, quiet)
+        path = clone(path, quiet)
 
     path = os.path.normpath(path)
 
