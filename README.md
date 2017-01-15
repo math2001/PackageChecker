@@ -6,7 +6,19 @@ They're good, the only problem is that it's not compatible with Sublime Text Pyt
 
 ## Dependencies
 
-Because PackageChecker clones your repo to check them, it needs `git` available in the command line. 
+Because PackageChecker clones your repo to check them, it needs `git` available in the command line.
+
+## Usage
+
+If you have Sublime Text *3*, you don't need to have `python` installed on your system. You just have to run the command `package_checker`. (you should bind a shortcut to it). Otherwise, you'll python *3* installed.
+
+All this command does is: show an input in which you can type all the arguments for the commands, in a *terminal-way*. The output will be shown in an output panel.
+
+So, everything is the same, except that you don't have to prefix your text with `python PackageChecker.py`
+
+Just run `--help` to get started
+
+*more coming soon*
 
 ### Contributing
 

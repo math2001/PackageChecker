@@ -33,7 +33,7 @@ class FakeStdout:
 class PackageCheckerCommand(WindowCommand):
 
     def run(self):
-        self.window.show_input_panel('$ PackageChecker.py ', '--help', self.run_command, None, None)
+        self.window.show_input_panel('$ PackageChecker.py ', '', self.run_command, None, None)
 
     def run_command(self, args):
         real_stdout = sys.stdout
