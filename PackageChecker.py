@@ -19,11 +19,10 @@ except SystemError:
     from get_package_infos import get_package_infos
     from functions import *
     from constants import *
+
 sys.path.pop()
 
 # NEEDS git on your system
-
-__all__ = 'check',
 
 def clone(url, quiet):
     name = os.path.basename(url)
@@ -66,10 +65,12 @@ def check(args):
     for checker_name in CHECKERS:
         checker_name = checker_name.replace(' ', '_')
         try:
-            module = importlib.import_module('.check_' + checker_name, package="PackageChecker.checkers")
+            # when run from Sublime Text
+            module = importlib.import_module('.' + checker_name, package="PackageChecker.checkers")
         except SystemError:
-            module = importlib.import_module('.check_' + checker_name, package="checkers")
-        Checker = getattr(module, 'Check' + to_camel_case(checker_name))
+            # when run from the terminal
+            module = importlib.import_module('.' + checker_name, package="checkers")
+        Checker = getattr(module, to_camel_case(checker_name))
         if reset:
             Checker.reset()
             reset = False

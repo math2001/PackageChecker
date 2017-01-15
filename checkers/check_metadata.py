@@ -27,4 +27,3 @@ class CheckMetadata(FileChecker):
             else:
                 self.fail("You shouldn't need a '.no-sublime-package'",
                           "Please refer to the wiki to know how to manage without it")
-                    

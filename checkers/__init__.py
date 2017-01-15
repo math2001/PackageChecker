@@ -1,12 +1,12 @@
 # -*- encoding: utf-8 -*-
 
 import os.path
+import glob
 import json
 from functions import *
 
-# needs to be defined dynamically
-CHECKERS = ('readme', 'menu', 'scripts', 'messages', 'keymap', 'commands', 'package name',
-            'metadata')
+CHECKERS = map(lambda item: os.path.splitext(os.path.basename(item))[0],
+               glob.glob('checkers/check_*.py'))
 
 class Checker:
 

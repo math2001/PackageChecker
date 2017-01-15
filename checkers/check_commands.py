@@ -18,7 +18,7 @@ class CheckCommands(FileChecker):
             items = json_parse(content)
         except ValueError as e:
             self.fail('Invalid JSON file',
-                      "In {!r}".format(self.current_file)
+                      "In {!r}".format(self.current_file),
                       "Trailing commas and comments aren't allowed.",
                       "Error message: {}".format(error))
             return

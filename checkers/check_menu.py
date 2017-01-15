@@ -68,7 +68,7 @@ class CheckMenu(FileChecker):
                 menus = json_parse(self.get_file_content(file))
             except ValueError as error:
                 self.fail('Invalid JSON file',
-                          "In '{}'".format(self.current_file)
+                          "In '{}'".format(self.current_file),
                           "Trailing commas and comments aren't allowed.",
                           "Error message: {}".format(error))
             else:
