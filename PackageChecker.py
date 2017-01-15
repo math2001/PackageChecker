@@ -103,8 +103,8 @@ def parse_args(args=None):
     parser.add_argument('-i', '--interactive', action='store_true', help="Run the test "
                             "interactively. If specified, you shouldn't specify *any* other "
                             "argument")
-    parser.add_argument('-x', '--ignore', action='append', metavar="CK", help="Exclude the "
-                                       "entire checker. You can specify this option several times")
+    parser.add_argument('-x', '--ignore', action='append', metavar="CK", default=[], help="Exclude "
+                                    "the entire checker. You can specify this option several times")
     return parser.parse_args(args)
 
 if __name__ == '__main__':
