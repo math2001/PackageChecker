@@ -44,7 +44,15 @@ def check(args):
     path = args.path
     is_pull_request = args.pull_request
     quiet = args.quiet
+    ignored_checkers = args.ignore
     format = 'json' if args.json else 'human'
+
+    if len(ignored_checkers) > 0:
+        # CSW: ignore
+        print('Excluding the following checkers:',
+              ', '.join([repr(ignored_checker) for ignored_checker in ignored_checkers]))
+
+    ignored_checkers = list(map(lambda item: 'check_' + item, ignored_checkers))
 
     if not os.path.exists(TEMP_DIR):
         os.makedirs(TEMP_DIR)
@@ -63,7 +71,8 @@ def check(args):
     sys.path.append(os.path.join(os.path.dirname(__file__)))
     reset = True
     for checker_name in CHECKERS:
-        checker_name = checker_name.replace(' ', '_')
+        if checker_name in ignored_checkers:
+            continue
         try:
             # when run from Sublime Text
             module = importlib.import_module('.' + checker_name, package="PackageChecker.checkers")
@@ -81,8 +90,9 @@ def check(args):
     return Checker.output(format=format)
 
 def parse_args(args=None):
-    parser = argparse.ArgumentParser(prog="PackageChecker", description="Check your Sublime Text "
-                                                                        "Packages really simply")
+    parser = argparse.ArgumentParser(prog="PackageChecker",
+                                     description="Check your Sublime Text Packages really simply",
+                                     fromfile_prefix_chars='@')
     parser.add_argument('path', nargs="?", help='Path (or URL) to the package to check.')
     parser.add_argument('-p', '--pull-request', action='store_true', help="It's a URL to a pull "
                                                                           "request")
@@ -93,6 +103,8 @@ def parse_args(args=None):
     parser.add_argument('-i', '--interactive', action='store_true', help="Run the test "
                             "interactively. If specified, you shouldn't specify *any* other "
                             "argument")
+    parser.add_argument('-x', '--ignore', action='append', metavar="CK", help="Exclude the "
+                                       "entire checker. You can specify this option several times")
     return parser.parse_args(args)
 
 if __name__ == '__main__':
