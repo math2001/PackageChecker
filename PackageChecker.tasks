@@ -7,11 +7,10 @@
  ☐ check tags
  ☐ [keymaps] check that there is a difference between every plat
  ☐ create wiki
- ☐ check_keymap: caption must be always the same
-
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+ ✔ check_keymap: caption must be always the same @done Sun 15 Jan 2017 at 15:21
  ✔ check data: `package-metadata.json`, '*.pyc', '.no-sublime-package' @done Sun 15 Jan 2017 at 13:47
  ✔ adapt for st user @done Sun 15 Jan 2017 at 13:19
  ✔ improve output @done Sat 14 Jan 2017 at 16:29

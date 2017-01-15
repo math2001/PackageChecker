@@ -32,12 +32,12 @@ class CheckKeymap(FileChecker):
         """
         if not isinstance(keys, list):
             self.fail('Keys must be a *list* of non-empty strings',
-                      "Got a {!r}".format(name(keys)))
+                      "Got a {!r} instead".format(name(keys)))
 
         for bit in keys:
             if not isinstance(bit, str):
                 self.fail('Keys must be a list of non-empty *strings*',
-                          "Got a {!r}".format(name(bit)))
+                          "Got a {!r} instead".format(name(bit)))
             elif name == '':
                 self.fail('Keys must be a list of *non-empty* strings')
             elif name in ['ctrl', 'alt', 'super', 'shift']:
@@ -51,7 +51,8 @@ class CheckKeymap(FileChecker):
                 - platform: the platform to compare against (can be *)
         """
         if not isinstance(pck_keymaps, list):
-            return self.fail('Keymaps must be lists. Got {!r} instead'.format(name(pck_keymaps)))
+            return self.fail('Keymaps must be lists.',
+                             'Got {!r} instead'.format(name(pck_keymaps)))
 
         if platform == '*':
             platforms = ['Linux', 'Windows', 'OSX']
@@ -70,9 +71,11 @@ class CheckKeymap(FileChecker):
         for binding in pck_keymaps:
             for pck_key, pck_value in binding.items():
                 if pck_key not in self.ALLOWED_KEYS:
-                    self.fail("Found an unallowed key: {!r}".format(pck_key))
+                    self.fail('Found an unallowed key',
+                              'The key is {!r}'.format(pck_key))
                 elif name(pck_value) != self.ALLOWED_KEYS[pck_key]:
-                    self.fail('Found an unallowed value for the key {!r}'.format(pck_key),
+                    self.fail('Found an unallowed value',
+                              'The key of that value is {!r}'.format(pck_key),
                               "Expected a {!r}, got a {!r}".format(self.ALLOWED_KEYS[pck_key],
                                                                    name(pck_value)))
                 if pck_key == 'context':
@@ -101,7 +104,9 @@ class CheckKeymap(FileChecker):
                     if default_binding['keys'] == binding['keys'] \
                         and 'context' not in default_binding:
                         if 'context' in binding:
-                            self.warn('Overwrites the {} default binding'.format(platform),
+                            self.warn('Found a key binding that overwrites a default one',
+                                      'Defined for the platform {!r} default binding'.format(
+                                                                                          platform),
                                       'The keys are: {!r}'.format(binding['keys']),
                                       "Note that this there's a context, so be sure that it's "
                                       "working properly and you can ignore this warning",
@@ -111,7 +116,8 @@ class CheckKeymap(FileChecker):
 
 
                         else:
-                            self.fail('Overwrites the {} default bindings unconditionally'.format(
+                            self.fail('Found a key binding that overwrites a default one',
+                                      'Defined for the platform {!r} default binding'.format(
                                                                                           platform),
                                       'The keys are: {!r}'.format(binding['keys']),
                                       "The default command {!r} is overwritten by {!r}".format(
