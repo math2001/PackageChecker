@@ -68,7 +68,6 @@ def check(args):
     reset = True
     for checker_name in CHECKERS:
         checker_name = checker_name.replace(' ', '_')
-        # from .checkers.check_readme import *
         try:
             module = importlib.import_module('.check_' + checker_name, package="PackageChecker.checkers")
         except SystemError:
@@ -76,7 +75,7 @@ def check(args):
         Checker = getattr(module, 'Check' + to_camel_case(checker_name))
         if reset:
             Checker.reset()
-                reset = False
+            reset = False
         Checker(path, infos, is_pull_request).run()
 
     sys.path.pop()
