@@ -6,6 +6,7 @@ import importlib
 import sys
 import subprocess
 import tempfile
+import textwrap
 
 sys.path.append(os.path.join(os.path.dirname(__file__)))
 
@@ -28,7 +29,7 @@ def clone(url, quiet):
     name = os.path.basename(url)
     if os.path.exists(os.path.join(TEMP_DIR, name)):
         # CSW: ignore
-        if not quiet: print('Already cloned. Using it again')
+        if not quiet: print('Already cloned. Using {} again'.format(os.path.join(TEMP_DIR, name)))
         return os.path.join(TEMP_DIR, name)
     # CSW: ignore
     if not quiet: print('Cloning {} into {!r}'.format(url, name))
@@ -105,17 +106,17 @@ def parse_args(args=None):
                             "argument")
     parser.add_argument('-x', '--ignore', action='append', metavar="CK", default=[], help="Exclude "
                                     "the entire checker. You can specify this option several times")
-    return parser.parse_args(args)
+    return parser.parse_args(args), parser
 
 if __name__ == '__main__':
     # it's run from the command line
-    args = parse_args()
+    args, parser = parse_args()
 
     if args.interactive and (args.pull_request is True or
                              args.quiet is True or args.path is not None):
         # CSW: ignore
-        print("Interactive mode overwrites every other settings. So, you can't specify any other "
-              "options if you choose interactive mode")
+        pep_print("Interactive mode overwrites every other settings. So, you can't specify any other "
+              "options if you choose interactive mode", newlines=1)
         parser.print_help()
         exit(1)
 
@@ -140,6 +141,10 @@ if __name__ == '__main__':
         args.quiet = confirm('quiet (y/n)> ')
         args.pull_request = confirm('is a pull request (y/n)> ')
         args.json = confirm('Output in a JSON format (y/n)> ')
+
+    if args.path is None or args.path == '':
+        pep_print('FATAL: You need to specifiy a path (got {!r})'.format(args.path))
+        exit(1)
 
     # CSW: ignore
     print(check(args))

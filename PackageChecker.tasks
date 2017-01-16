@@ -1,4 +1,3 @@
- ☐ licence
  ☐ generate package infos: defines which sublime text build's needed
  ☐ keymap check platform
  ☐ web interface
@@ -7,9 +6,14 @@
  ☐ [keymaps] check that there is a difference between every plat
  ☐ create wiki
  ☐ explain ST interface in README
+ ☐ [keymaps] compare all the files and check that they're different.
+ ☐ add flag: --st3-only
+ ☐ fix bug when cloning an unexisting repository
+ ☐ output in markdown format
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+ ✔ licence @done Sun 15 Jan 2017 at 19:07
  ✔ ignore checker @done Sun 15 Jan 2017 at 17:20
  ✔ check_keymap: caption must be always the same @done Sun 15 Jan 2017 at 15:21
  ✔ check data: `package-metadata.json`, '*.pyc', '.no-sublime-package' @done Sun 15 Jan 2017 at 13:47
