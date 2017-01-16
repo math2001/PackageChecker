@@ -33,13 +33,16 @@ class Checker:
     def warn(self, msg, *descriptions):
         self.add_msg('warns', msg, '\n'.join(descriptions))
 
-    def abs_path(self, path):
+    def abs_path(self, path=None):
+        if path is None:
+            return self.path
         if path.startswith(os.path.sep):
             raise ValueError("Your path is relative to the tested package, wherever you are.")
         return os.path.join(self.path, path)
 
     def rel_path(self, path):
         """return relative path (from the package)"""
+        path = os.path.normpath(path)
         path = path.replace(self.path, '')
         if path.startswith(os.path.sep):
             return path[1:]
@@ -49,7 +52,11 @@ class Checker:
         return os.path.isfile(self.abs_path(file_name))
 
     def is_folder(self, path):
-        return os.path.isfolder(self.abs_path(path))
+        return os.path.isdir(self.abs_path(path))
+
+    def is_dir(self, path):
+        """An alias for is_folder"""
+        return self.is_folder(path)
 
     def get_file_content(self, file_name):
         with open(self.abs_path(file_name), 'r') as fp:
@@ -77,13 +84,17 @@ class Checker:
             for item in os.listdir(path):
                 if os.path.isdir(os.path.join(path, item)):
                     recursive(os.path.join(path, item), **kwargs)
-                elif 'extension' in kwargs \
-                    and os.path.splitext(item)[1] == kwargs['extension']:
+                elif 'extension' in kwargs:
+                    if os.path.splitext(item)[1] == kwargs['extension']:
+                        files.append(self.rel_path(os.path.join(path, item)))
+                elif 'file_name' in kwargs:
+                    if kwargs['file_name'] == item:
+                        files.append(self.rel_path(os.path.join(path, item)))
+                elif 'rel_path' in kwargs:
+                    if kwargs['rel_path'] == self.rel_path(os.path.join(path, item)):
+                        files.append(self.rel_path(os.path.join(path, item)))
+                else:
                     files.append(self.rel_path(os.path.join(path, item)))
-                elif 'file_name' in kwargs and kwargs['file_name'] == item:
-                    files.append(self.rel_path(item))
-                elif 'rel_path' in kwargs and kwargs['rel_path'] == self.rel_path(item):
-                    files.append(self.rel_path(item))
             return files
 
         return recursive(base_path, **kwargs)
