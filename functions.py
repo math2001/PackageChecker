@@ -2,8 +2,12 @@
 from re import compile as re_comp
 from json import JSONDecoder
 import textwrap
+import errno
+import os
+import stat
 
-__all__ = 'is_valid_command_name', 'json_parse', 'to_camel_case', 'name', 'pep_print'
+__all__ = ('is_valid_command_name', 'json_parse', 'to_camel_case', 'name', 'pep_print',
+          'handle_remove_readonly')
 
 MATCH_COMMAND_NAME = re_comp('^[a-z][a-z0-9_]+$')
 json_decoder = JSONDecoder()
@@ -26,3 +30,11 @@ def pep_print(*args, **kwargs):
     for i in range(kwargs.get('newlines', 0)):
         # CSW: ignore
         print()
+
+def handle_remove_readonly(func, path, exc):
+    excvalue = exc[1]
+    if func in (os.rmdir, os.remove) and excvalue.errno == errno.EACCES:
+        os.chmod(path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO) # 0777
+        func(path)
+    else:
+        raise

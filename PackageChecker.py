@@ -6,7 +6,8 @@ import importlib
 import sys
 import subprocess
 import tempfile
-import textwrap
+import shutil
+
 
 sys.path.append(os.path.join(os.path.dirname(__file__)))
 
@@ -25,28 +26,31 @@ sys.path.pop()
 
 # NEEDS git on your system
 
-def clone(url, quiet):
+def clone(url, quiet, fresh):
     name = os.path.basename(url)
-    if os.path.exists(os.path.join(TEMP_DIR, name)):
-        # CSW: ignore
-        if not quiet: print('Already cloned. Using {} again'.format(os.path.join(TEMP_DIR, name)))
-        return os.path.join(TEMP_DIR, name)
-    # CSW: ignore
-    if not quiet: print('Cloning {} into {!r}'.format(url, name))
+    path = os.path.join(TEMP_DIR, name)
+    if os.path.exists(path):
+        if fresh:
+            if not quiet: pep_print("Clearing cache '{}'".format(path))
+            shutil.rmtree(path, ignore_errors=False, onerror=handle_remove_readonly)
+        else:
+            if not quiet: pep_print("Already cloned. Using '{}' again".format(path))
+            return path
+    if not quiet: pep_print('Cloning {!r} into {!r}'.format(url, name))
     cmd = ['git', 'clone', '--depth=1', '--branch=master', url, name]
     cmd = subprocess.Popen(cmd, cwd=TEMP_DIR, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    # CSW: ignore
-    if not quiet: print(cmd.stdout.read().decode())
-    return os.path.join(TEMP_DIR, name)
+    if not quiet: pep_print(cmd.stdout.read().decode())
+    return path
 
 
 def check(args):
 
     path = args.path
-    is_pull_request = args.pull_request
+    fresh = args.fresh
     quiet = args.quiet
+    output_format = 'json' if args.json else 'human'
+    is_pull_request = args.pull_request
     ignored_checkers = args.ignore
-    format = 'json' if args.json else 'human'
 
     if len(ignored_checkers) > 0:
         # CSW: ignore
@@ -63,9 +67,9 @@ def check(args):
     infos = {}
     if is_pull_request:
         infos = get_package_infos(path)
-        path = clone(infos['details'], quiet)
+        path = clone(infos['details'], quiet, fresh)
     elif path.startswith(('https://', 'http://')):
-        path = clone(path, quiet)
+        path = clone(path, quiet, fresh)
 
     path = os.path.normpath(path)
 
@@ -88,7 +92,7 @@ def check(args):
 
     sys.path.pop()
 
-    return Checker.output(format=format)
+    return Checker.output(format=output_format)
 
 def parse_args(args=None):
     parser = argparse.ArgumentParser(prog="PackageChecker",
@@ -106,6 +110,7 @@ def parse_args(args=None):
                             "argument")
     parser.add_argument('-x', '--ignore', action='append', metavar="CK", default=[], help="Exclude "
                                     "the entire checker. You can specify this option several times")
+    parser.add_argument('-f', '--fresh', action='store_true', help="Don't use the cache")
     return parser.parse_args(args), parser
 
 if __name__ == '__main__':
