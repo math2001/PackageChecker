@@ -115,8 +115,8 @@ def parse_args(args=None):
     parser.add_argument('-f', '--fresh', action='store_true', help="Don't use the cache")
     parser.add_argument('-b', '--support-st2', action='store_true', help='Backward compatible (for '
                                                                          'ST2)')
-    parser.add_argument('-d', '--depth', type=int, nargs='?', default=50, help="The depth to clone "
-                                            "the repo with. Only usefull if it is a remote package")
+    parser.add_argument('-d', '--depth', metavar='DP', type=int, default=50, help="The "
+                            "depth to clone the repo with. Only useful if it is a remote package")
 
     return parser.parse_args(args), parser
 
