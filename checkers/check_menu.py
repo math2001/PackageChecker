@@ -63,11 +63,11 @@ class CheckMenu(FileChecker):
         for file in self.glob_files(extension='.sublime-menu'):
             self.current_file = self.rel_path(file)
             try:
-                menus = json_parse(self.get_file_content(file))
+                menus = self.load_json(self.get_file_content(file))
             except ValueError as error:
                 self.fail('Invalid JSON file',
                           "In '{}'".format(self.current_file),
                           "Trailing commas and comments aren't allowed.",
-                          "Error message: {}".format(error))
+                          "Error message: '{}'".format(error))
             else:
                 self.check_menus(menus)

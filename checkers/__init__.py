@@ -126,7 +126,7 @@ class Checker:
         if self.support_st2:
             return json.loads(string)
         else:
-            return jsonc.loads(string)
+            return jsonc.loads(string) # support comments and trailing commas
 
     @staticmethod
     def output(format):

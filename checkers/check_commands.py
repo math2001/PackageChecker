@@ -15,7 +15,7 @@ class CheckCommands(FileChecker):
 
     def check(self, content):
         try:
-            items = json_parse(content)
+            items = self.load_json(content)
         except ValueError as e:
             self.fail('Invalid JSON file',
                       "In {!r}".format(self.current_file),
