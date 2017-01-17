@@ -35,17 +35,15 @@ class CheckMenu(FileChecker):
         if 'children' in menu and 'command' in menu:
             self.warn("You shouldn't have a 'command' and 'children' key "
                       "in the same 'dict'.",
-                      "The caption for this item is {!r}".format(menu.get('caption',
-                                                                          '<not specified>')))
-        elif 'children' not in menu and 'command' not in menu and menu.get('caption', None) != '-':
+                      "The caption for this item is {!r}".format(menu.get('caption')))
+        elif 'children' not in menu and 'command' not in menu and menu.get('caption') != '-':
             self.warn("Each 'dict' should have a 'command' or 'children' key.")
 
         for key, value in menu.items():
             # run value specific tests
             if key not in self.ALLOWED_KEYS.keys():
                 self.fail('An unallowed key has been found',
-                    'The key is {!r} and has for value {!r}'.format(key, value),
-                    "Note: the key's are case sensitive")
+                    'The key is {!r} and has for value {!r}'.format(key, value))
             elif name(value) != self.ALLOWED_KEYS[key]:
                 self.fail('Found an unexpected type',
                           'For the key {!r}, excepted a {!r}, got a {!r}'.format(key,

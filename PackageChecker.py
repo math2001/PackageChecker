@@ -42,7 +42,6 @@ def clone(url, quiet, fresh):
     if not quiet: pep_print(cmd.stdout.read().decode())
     return path
 
-
 def check(args):
 
     path = args.path
@@ -51,6 +50,7 @@ def check(args):
     output_format = 'json' if args.json else 'human'
     is_pull_request = args.pull_request
     ignored_checkers = args.ignore
+    support_st2 = args.support_st2
 
     if len(ignored_checkers) > 0:
         # CSW: ignore
@@ -70,6 +70,7 @@ def check(args):
         path = clone(infos['details'], quiet, fresh)
     elif path.startswith(('https://', 'http://')):
         path = clone(path, quiet, fresh)
+        infos['support_st2'] = support_st2
 
     path = os.path.normpath(path)
 
@@ -111,6 +112,8 @@ def parse_args(args=None):
     parser.add_argument('-x', '--ignore', action='append', metavar="CK", default=[], help="Exclude "
                                     "the entire checker. You can specify this option several times")
     parser.add_argument('-f', '--fresh', action='store_true', help="Don't use the cache")
+    parser.add_argument('-b', '--support-st2', action='store_true', help='Backward compatible (for '
+                                                                         'ST2)')
     return parser.parse_args(args), parser
 
 if __name__ == '__main__':

@@ -2,7 +2,6 @@
  ☐ keymap check platform
  ☐ web interface
  ☐ check settings: comment allowed but not trailing commas
- ☐ check tags
  ☐ [keymaps] check that there is a difference between every plat
  ☐ create wiki
  ☐ explain ST interface in README
@@ -13,6 +12,7 @@
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+ ✔ check tags @done Tue 17 Jan 2017 at 10:59
  ✔ licence @done Sun 15 Jan 2017 at 19:07
  ✔ ignore checker @done Sun 15 Jan 2017 at 17:20
  ✔ check_keymap: caption must be always the same @done Sun 15 Jan 2017 at 15:21

@@ -4,6 +4,8 @@ import os.path
 import glob
 import json
 from functions import *
+import jsonc
+import textwrap
 
 CHECKERS = map(lambda item: os.path.splitext(os.path.basename(item))[0],
                glob.glob('checkers/check_*.py'))
@@ -13,25 +15,41 @@ class Checker:
     """Every checker inherits from this class.
     It implements every global function"""
 
+    ALLOWED_KEYS_FOR_MSG = ('file', )
+
     def __init__(self, path, infos, is_pull_request):
         self.path = path
         self.labels = infos.get('labels', [])
-        self.name = infos.get('name', None)
+        self.name = infos.get('name')
         self.is_pull_request = is_pull_request
+        self.support_st2 = infos.get('support_st2', False)
 
     @staticmethod
     def reset():
         Checker.fails = {}
         Checker.warns = {}
 
-    def add_msg(self, type, msg, description):
-        getattr(Checker, type).setdefault(name(self), []).append([msg, description])
+    def add_msg(self, type, msg, description, **kwargs):
+        if 'description' in kwargs:
+            raise ValueError("You shouldn't include 'description' in kwargs. See the dev part in the "
+                             "wiki")
+        valid, key = every(kwargs.keys(), lambda key: key in Checker.ALLOWED_KEYS_FOR_MSG)
+        if not valid:
+            raise ValueError("The key {!r} isn't allowed. See the dev part in the wiki".format(key))
 
-    def fail(self, msg, *descriptions):
-        self.add_msg('fails', msg, '\n'.join(descriptions))
+        kwargs['description'] = description
+        file = kwargs.get('file', '')
+        dict = getattr(Checker, type) \
+            .setdefault(name(self), {}) \
+            .setdefault(msg, {}) \
+            .setdefault(file, []).append(description)
 
-    def warn(self, msg, *descriptions):
-        self.add_msg('warns', msg, '\n'.join(descriptions))
+
+    def fail(self, msg, *descriptions, **kwargs):
+        self.add_msg('fails', msg, '\n'.join(descriptions), **kwargs)
+
+    def warn(self, msg, *descriptions, **kwargs):
+        self.add_msg('warns', msg, '\n'.join(descriptions), **kwargs)
 
     def abs_path(self, path=None):
         if path is None:
@@ -68,7 +86,7 @@ class Checker:
         def recursive(path, **kwargs):
             for item in os.listdir(path):
                 if os.path.isdir(os.path.join(path, item)):
-                    if kwargs.get('name', None) == item:
+                    if kwargs.get('name') == item:
                         items.append(item)
                     recursive(os.path.join(path, item), **kwargs)
             return items
@@ -104,23 +122,40 @@ class Checker:
             raise ValueError("Your path is relative to this package, wherever you are.")
         return os.path.normpath(os.path.join(__file__, '..', '..', 'static', path))
 
+    def load_json(self, string):
+        if self.support_st2:
+            return json.loads(string)
+        else:
+            return jsonc.loads(string)
 
     @staticmethod
     def output(format):
         if format == 'human':
-            indentation = ' ' * 4
+            original_indentation = ' ' * 4
+
+            indentation = original_indentation
 
             def render(text, title, data):
+                indentation = ' ' * 4
                 text.append('{} [{}]'.format(title, len(data)))
                 text.append('*' * len(text[-1]))
-                for trigger, packs in data.items():
+                for trigger, types in data.items():
                     text.append('')
-                    text.append(indentation + trigger + ' [%i]' % len(packs))
-                    text.append(indentation + '-' * len(text[-1].lstrip()))
-                    for msg, description in packs:
-                        text.append(indentation + msg)
-                        for line in description.splitlines():
-                            text.append(indentation * 2 + line)
+                    text.append(indentation + trigger)
+                    text.append(indentation + '=' * (len(text[-1]) - len(indentation)))
+                    indentation = original_indentation * 2
+                    for type_, infos in types.items():
+                        text.append('')
+                        text.append(indentation + type_)
+                        text.append(indentation + '-' * (len(text[-1]) - len(indentation)))
+                        for file, descriptions in infos.items():
+                            if file:
+                                text.append(indentation + "> In '%s'" % file)
+                            for description in descriptions:
+                                text.append(textwrap.indent(description,
+                                                indentation + original_indentation if file else ''))
+                    indentation = original_indentation
+
 
             text = []
             render(text, 'Failer', Checker.fails)
@@ -135,14 +170,12 @@ class Checker:
                 'fails': Checker.fails,
                 'warning': Checker.warns
             }
-            return json.dumps(result)
+            return json.dumps(result, indent=4)
 
 class FileChecker(Checker):
 
     def fail(self, msg, *descriptions):
-        super().fail(msg, *list(descriptions) \
-                          + ['- Found in {!r}'.format(self.current_file)])
+        super().fail(msg, *list(descriptions), file=self.current_file)
 
     def warn(self, msg, *descriptions):
-        super().warn(msg, *list(descriptions) \
-                          + ['- Found in {!r}'.format(self.current_file)])
+        super().warn(msg, *list(descriptions), file=self.current_file)

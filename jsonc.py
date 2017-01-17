@@ -4,6 +4,22 @@ Due to (multi-line) comments being stripped,
 reported json.DecodeErrors may report "wrong" line and column numbers.
 """
 
+"""
+This module isn't working properly:
+
+{
+    "hello": "tricked,]",
+}
+
+gives
+
+{
+    "hello": "tricked"
+}
+
+But, for the way I'm using, it's okay
+"""
+
 import json
 import re
 
@@ -52,5 +68,5 @@ def _preprocess_json(string):
     return _strip_trailing_json_commas(_strip_js_comments(string))
 
 
-def loads(string, *args, **kwargs):
+def loads(string, remove_comments=True, remove_commas=True, *args, **kwargs):
     return json.loads(_preprocess_json(string), *args, **kwargs)

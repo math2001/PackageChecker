@@ -7,7 +7,7 @@ import os
 import stat
 
 __all__ = ('is_valid_command_name', 'json_parse', 'to_camel_case', 'name', 'pep_print',
-          'handle_remove_readonly')
+          'handle_remove_readonly', 'every')
 
 MATCH_COMMAND_NAME = re_comp('^[a-z][a-z0-9_]+$')
 json_decoder = JSONDecoder()
@@ -38,3 +38,9 @@ def handle_remove_readonly(func, path, exc):
         func(path)
     else:
         raise
+
+def every(iterable, func):
+    for item in iterable:
+        if not func(item):
+            return False, item
+    return True, None
