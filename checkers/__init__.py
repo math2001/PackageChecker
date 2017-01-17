@@ -10,6 +10,27 @@ import textwrap
 CHECKERS = map(lambda item: os.path.splitext(os.path.basename(item))[0],
                glob.glob('checkers/check_*.py'))
 
+class Renderer:
+
+    @staticmethod
+    def markdown(text, title, data):
+        text.append('{} [{}]'.format(title, len(data)))
+        text.append("=" * len(text[-1]))
+        for trigger, caption_and_files in data.items():
+            text.append('')
+            text.append('{}'.format(trigger))
+            text.append('-' * len(text[-1]))
+            for caption, files_and_descriptions in caption_and_files.items():
+                text.append('')
+                text.append('### *{}*'.format(caption))
+                for file, descriptions in files_and_descriptions.items():
+                    text.append('')
+                    text.append('#### `{}` [{}]'.format(file, len(descriptions)))
+                    text.append('')
+                    for description in descriptions:
+                        text.append('- {}'.format(description or '*No description provided*'))
+
+
 class Checker:
 
     """Every checker inherits from this class.
@@ -130,14 +151,14 @@ class Checker:
 
     @staticmethod
     def output(format):
-        if format == 'human':
+        if format == 'terminal':
             original_indentation = ' ' * 4
 
             indentation = original_indentation
 
             def render(text, title, data):
                 indentation = ' ' * 4
-                text.append('{} [{}]'.format(title, len(data)))
+                text.append('{}{} [{}]'.format(title, 's' if len(data) > 1 else '', len(data)))
                 text.append('*' * len(text[-1]))
                 for trigger, types in data.items():
                     text.append('')
@@ -165,12 +186,21 @@ class Checker:
                           'rid of them, please refer to the wiki']
 
             return '\n'.join(text)
+        elif format == 'markdown':
+            text = []
+            Renderer.markdown(text, 'Failer', Checker.fails)
+            text.append('')
+            Renderer.markdown(text, 'Warners', Checker.warns)
+            text += ['', 'This package shows you commons errors. To learn how to get '
+                          'rid of them, please refer to the wiki']
+            return '\n'.join(text).replace("'", '`')
+
         else:
             result = {
                 'fails': Checker.fails,
                 'warning': Checker.warns
             }
-            return json.dumps(result)
+            return json.dumps(result, indent=4)
 
 class FileChecker(Checker):
 

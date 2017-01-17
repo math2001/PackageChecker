@@ -16,11 +16,13 @@ try:
     from .get_package_infos import get_package_infos
     from .functions import *
     from .constants import *
+    from .pyperclip import copy as pyperclip_sublime_copy
 except SystemError:
     from checkers import CHECKERS
     from get_package_infos import get_package_infos
     from functions import *
     from constants import *
+    from pyperclip import copy as pyperclip_sublime_copy
 
 sys.path.pop()
 
@@ -48,7 +50,7 @@ def check(args):
     path = args.path
     fresh = args.fresh
     quiet = args.quiet
-    output_format = 'json' if args.json else 'human'
+    output_format = 'json' if args.json else 'markdown' if args.markdown else 'terminal'
     is_pull_request = args.pull_request
     ignored_checkers = args.ignore
 
@@ -100,13 +102,12 @@ def parse_args(args=None):
     parser = argparse.ArgumentParser(prog="PackageChecker",
                                      description="Check your Sublime Text Packages really simply",
                                      fromfile_prefix_chars='@')
+
     parser.add_argument('path', nargs="?", help='Path (or URL) to the package to check.')
     parser.add_argument('-p', '--pull-request', action='store_true', help="It's a URL to a pull "
                                                                           "request")
     parser.add_argument('-q', '--quiet', action="store_true", help='Output the strict minimum '
                                                                    '(fails and warning)')
-    parser.add_argument('-j', '--json', action='store_true', help='Output the result in a JSON '
-                                                                  'format.')
     parser.add_argument('-i', '--interactive', action='store_true', help="Run the test "
                             "interactively. If specified, you shouldn't specify *any* other "
                             "argument")
@@ -115,8 +116,15 @@ def parse_args(args=None):
     parser.add_argument('-f', '--fresh', action='store_true', help="Don't use the cache")
     parser.add_argument('-b', '--support-st2', action='store_true', help='Backward compatible (for '
                                                                          'ST2)')
-    parser.add_argument('-d', '--depth', type=int, nargs='?', default=50, help="The depth to clone "
-                                            "the repo with. Only usefull if it is a remote package")
+    parser.add_argument('-d', '--depth', metavar='DP', type=int, default=50, help="The "
+                            "depth to clone the repo with. Only useful if it is a remote package")
+    parser.add_argument('-c', '--clip', action='store_true', help='Copy the output to the clipboard'
+                                                                                                   )
+    format_group = parser.add_mutually_exclusive_group()
+    format_group.add_argument('-j', '--json', action='store_true', help='Output the result in a '
+                                                                        'JSON format.')
+    format_group.add_argument('-m', '--markdown', action='store_true', help='Output the result in '
+                                                                            'Markdown format.')
 
     return parser.parse_args(args), parser
 
@@ -131,7 +139,7 @@ if __name__ == '__main__':
         args.quiet = confirm('quiet (y/n)> ')
         args.pull_request = confirm('is a pull request (y/n)> ')
         args.json = confirm('Output in a JSON format (y/n)> ')
-        args.ignore = [checker.strip() for checkre in ask('ignore (comma seperated)> ').split(',')]
+        args.ignore = [checker.strip() for checkre in ask('ignore (comma separated)> ').split(',')]
         args.fresh = confirm('Fresh (y/n)> ')
         args.support_st2 = confirm('Support ST2 (y/n)> ')
         args.depth = int(ask('Depth {integer}> '))
@@ -139,5 +147,12 @@ if __name__ == '__main__':
     while not args.path:
         args.path = ask('Path or URL> ')
 
+    output = check(args)
+    if args.clip:
+        if pyperclip_sublime_copy:
+            pyperclip_sublime_copy(output)
+        else:
+            # CSW: ignore
+            print("Copy functionality unavailable!")
     # CSW: ignore
-    print(check(args))
+    print(output)
