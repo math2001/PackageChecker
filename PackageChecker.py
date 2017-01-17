@@ -129,30 +129,15 @@ if __name__ == '__main__':
         exit(1)
 
     if args.interactive:
-        if sys.version_info.major == 3:
-            ask = input
-        elif sys.version_info.major == 2:
-            ask = raw_input
-        else:
-            raise SystemError('Unknown version of python. Please update')
-
-        def confirm(msg):
-            ans = ask(msg)
-            if ans.lower() in ('y', 'yes'):
-                return True
-            elif ans.lower() in ('n', 'no'):
-                return False
-            else:
-                return confirm(msg)
-
-        args.path = ask('Path or URL> ')
+        args.path = ''
+        while args.path == '':
+            args.path = ask('Path or URL> ')
         args.quiet = confirm('quiet (y/n)> ')
         args.pull_request = confirm('is a pull request (y/n)> ')
         args.json = confirm('Output in a JSON format (y/n)> ')
 
-    if args.path is None or args.path == '':
-        pep_print('FATAL: You need to specifiy a path (got {!r})'.format(args.path))
-        exit(1)
+    while not args.path:
+        args.path = ask('Path or URL> ')
 
     # CSW: ignore
     print(check(args))

@@ -5,9 +5,10 @@ import textwrap
 import errno
 import os
 import stat
+import sys
 
 __all__ = ('is_valid_command_name', 'json_parse', 'to_camel_case', 'name', 'pep_print',
-          'handle_remove_readonly', 'every')
+          'handle_remove_readonly', 'every', 'ask', 'confirm')
 
 MATCH_COMMAND_NAME = re_comp('^[a-z][a-z0-9_]+$')
 json_decoder = JSONDecoder()
@@ -44,3 +45,19 @@ def every(iterable, func):
         if not func(item):
             return False, item
     return True, None
+
+if sys.version_info.major == 3:
+    ask = input
+elif sys.version_info.major == 2:
+    ask = raw_input
+else:
+    raise SystemError('Unknown version of python. Please update')
+
+def confirm(msg):
+    ans = ask(msg)
+    if ans.lower() in ('y', 'yes'):
+        return True
+    elif ans.lower() in ('n', 'no'):
+        return False
+    else:
+        return confirm(msg)

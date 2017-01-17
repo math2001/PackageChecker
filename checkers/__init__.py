@@ -153,7 +153,7 @@ class Checker:
                                 text.append(indentation + "> In '%s'" % file)
                             for description in descriptions:
                                 text.append(textwrap.indent(description,
-                                                indentation + original_indentation if file else ''))
+                                              indentation + (original_indentation if file else '')))
                     indentation = original_indentation
 
 
@@ -170,7 +170,7 @@ class Checker:
                 'fails': Checker.fails,
                 'warning': Checker.warns
             }
-            return json.dumps(result, indent=4)
+            return json.dumps(result)
 
 class FileChecker(Checker):
 
