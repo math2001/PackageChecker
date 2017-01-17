@@ -37,8 +37,9 @@ def clone(url, quiet, fresh):
             if not quiet: pep_print("Already cloned. Using '{}' again".format(path))
             return path
     if not quiet: pep_print('Cloning {!r} into {!r}'.format(url, name))
-    cmd = ['git', 'clone', '--depth=1', '--branch=master', url, name]
-    cmd = subprocess.Popen(cmd, cwd=TEMP_DIR, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    depth = '--depth=%i' % args.depth if args.depth else ''
+    cmd = ['git', 'clone', depth, '--branch=master', '--verbose', url, name]
+    cmd = subprocess.Popen(cmd, cwd=TEMP_DIR, stdout=subprocess.PIPE)
     if not quiet: pep_print(cmd.stdout.read().decode())
     return path
 
@@ -50,7 +51,6 @@ def check(args):
     output_format = 'json' if args.json else 'human'
     is_pull_request = args.pull_request
     ignored_checkers = args.ignore
-    support_st2 = args.support_st2
 
     if len(ignored_checkers) > 0:
         # CSW: ignore
@@ -70,7 +70,8 @@ def check(args):
         path = clone(infos['details'], quiet, fresh)
     elif path.startswith(('https://', 'http://')):
         path = clone(path, quiet, fresh)
-        infos['support_st2'] = support_st2
+        infos['support_st2'] = args.support_st2
+        infos['depth'] = args.depth
 
     path = os.path.normpath(path)
 
@@ -114,19 +115,14 @@ def parse_args(args=None):
     parser.add_argument('-f', '--fresh', action='store_true', help="Don't use the cache")
     parser.add_argument('-b', '--support-st2', action='store_true', help='Backward compatible (for '
                                                                          'ST2)')
+    parser.add_argument('-d', '--depth', type=int, nargs='?', default=50, help="The depth to clone "
+                                            "the repo with. Only usefull if it is a remote package")
+
     return parser.parse_args(args), parser
 
 if __name__ == '__main__':
     # it's run from the command line
     args, parser = parse_args()
-
-    if args.interactive and (args.pull_request is True or
-                             args.quiet is True or args.path is not None):
-        # CSW: ignore
-        pep_print("Interactive mode overwrites every other settings. So, you can't specify any other "
-              "options if you choose interactive mode", newlines=1)
-        parser.print_help()
-        exit(1)
 
     if args.interactive:
         args.path = ''
@@ -135,6 +131,10 @@ if __name__ == '__main__':
         args.quiet = confirm('quiet (y/n)> ')
         args.pull_request = confirm('is a pull request (y/n)> ')
         args.json = confirm('Output in a JSON format (y/n)> ')
+        args.ignore = [checker.strip() for checkre in ask('ignore (comma seperated)> ').split(',')]
+        args.fresh = confirm('Fresh (y/n)> ')
+        args.support_st2 = confirm('Support ST2 (y/n)> ')
+        args.depth = int(ask('Depth {integer}> '))
 
     while not args.path:
         args.path = ask('Path or URL> ')
