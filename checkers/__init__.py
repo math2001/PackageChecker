@@ -30,6 +30,31 @@ class Renderer:
                     for description in descriptions:
                         text.append('- {}'.format(description or '*No description provided*'))
 
+    @staticmethod
+    def terminal(text, title, data):
+        original_indentation = ' ' * 4
+
+        indentation = original_indentation
+
+        text.append('{} [{}]'.format(replace_s(title, data), len(data)))
+        text.append('*' * len(text[-1]))
+        for trigger, types in data.items():
+            text.append('')
+            text.append(indentation + trigger)
+            text.append(indentation + '=' * (len(text[-1]) - len(indentation)))
+            indentation = original_indentation * 2
+            for type_, infos in types.items():
+                text.append('')
+                text.append(indentation + type_)
+                text.append(indentation + '-' * (len(text[-1]) - len(indentation)))
+                for file, descriptions in infos.items():
+                    if file:
+                        text.append(indentation + "> In '%s'" % file)
+                    for description in descriptions:
+                        text.append(textwrap.indent(description,
+                                      indentation + (original_indentation if file else '')))
+            indentation = original_indentation
+
 
 class Checker:
 
@@ -151,56 +176,21 @@ class Checker:
 
     @staticmethod
     def output(format):
-        if format == 'terminal':
-            original_indentation = ' ' * 4
-
-            indentation = original_indentation
-
-            def render(text, title, data):
-                indentation = ' ' * 4
-                text.append('{}{} [{}]'.format(title, 's' if len(data) > 1 else '', len(data)))
-                text.append('*' * len(text[-1]))
-                for trigger, types in data.items():
-                    text.append('')
-                    text.append(indentation + trigger)
-                    text.append(indentation + '=' * (len(text[-1]) - len(indentation)))
-                    indentation = original_indentation * 2
-                    for type_, infos in types.items():
-                        text.append('')
-                        text.append(indentation + type_)
-                        text.append(indentation + '-' * (len(text[-1]) - len(indentation)))
-                        for file, descriptions in infos.items():
-                            if file:
-                                text.append(indentation + "> In '%s'" % file)
-                            for description in descriptions:
-                                text.append(textwrap.indent(description,
-                                              indentation + (original_indentation if file else '')))
-                    indentation = original_indentation
-
-
-            text = []
-            render(text, 'Failer', Checker.fails)
-            text.append('')
-            render(text, 'Warners', Checker.warns)
-            text += ['', 'This package shows you commons errors. To learn how to get '
-                          'rid of them, please refer to the wiki']
-
-            return '\n'.join(text)
-        elif format == 'markdown':
-            text = []
-            Renderer.markdown(text, 'Failer', Checker.fails)
-            text.append('')
-            Renderer.markdown(text, 'Warners', Checker.warns)
-            text += ['', 'This package shows you commons errors. To learn how to get '
-                          'rid of them, please refer to the wiki']
-            return '\n'.join(text).replace("'", '`')
-
-        else:
+        if format == 'json':
             result = {
                 'fails': Checker.fails,
                 'warning': Checker.warns
             }
-            return json.dumps(result, indent=4)
+            return json.dumps(result)
+        else:
+            text = []
+            getattr(Renderer, format)(text, 'Failer(s)', Checker.fails)
+            text.append('')
+            getattr(Renderer, format)(text, 'Warner(s)', Checker.warns)
+            text += ['', 'This package shows you commons errors. To learn how to get rid of them, '
+                         'please refer to the wiki']
+
+            return '\n'.join(text)
 
 class FileChecker(Checker):
 

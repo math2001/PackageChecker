@@ -8,7 +8,7 @@ import stat
 import sys
 
 __all__ = ('is_valid_command_name', 'json_parse', 'to_camel_case', 'name', 'pep_print',
-          'handle_remove_readonly', 'every', 'ask', 'confirm')
+          'handle_remove_readonly', 'every', 'ask', 'confirm', 'replace_s')
 
 MATCH_COMMAND_NAME = re_comp('^[a-z][a-z0-9_]+$')
 json_decoder = JSONDecoder()
@@ -61,3 +61,6 @@ def confirm(msg):
         return False
     else:
         return confirm(msg)
+
+def replace_s(text, iterable):
+    return text.replace('(s)', 's' if len(iterable) > 1 else '')
