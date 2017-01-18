@@ -5,11 +5,17 @@ from functions import *
 
 class CheckMetadata(Checker):
 
+    """Check various files"""
+
     def run(self):
         pyc = self.glob_files(extension='.pyc')
         if len(pyc) > 0:
             self.fail("Your package shouldn't include any .pyc files",
                     "Found {} of them".format(len(pyc)))
+
+        if self.has_file('__init__.py') and self.get_file_content('__init__.py') == '':
+            self.fail("Found an empty '__init__.py' at the root of your package "
+                      "You should remove it.")
 
         pycache = self.glob_folders(name='__pycache__')
         if len(pycache):
