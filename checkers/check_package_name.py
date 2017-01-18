@@ -26,3 +26,14 @@ class CheckPackageName(Checker):
 
         if not RECOMMENDED_NAME.match(self.name):
             self.warn('Your package name should be composed exclusively by ASCII characters')
+
+        if len(self.glob_files(extension='.sublime-theme')) > 0:
+            if 'theme' in self.name and not self.name.startswith('Theme - '):
+                self.warn("Your package doesn't respect the conventions",
+                          "The convention for theme's name is to start by 'Theme - '.")
+            else:
+                self.warn("Your package doesn't respect the conventions",
+                         "Since your package has a '.sublime-theme', it looks like your package is "
+                         "a theme. "
+                         "If it's the case, the convention for your package's name is to start by "
+                         "'Theme - '")
