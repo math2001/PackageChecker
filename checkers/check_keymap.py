@@ -61,11 +61,11 @@ class CheckKeymap(FileChecker):
 
         bindings = {
             'Linux': jsonc.loads(
-                self.get_file_content(self.get_static('Default (Linux).sublime-keymap'))),
+                self.get_file_content(self.get_static('PackageChecker (Linux).sublime-keymap'))),
             'Windows': jsonc.loads(
-                self.get_file_content(self.get_static('Default (Windows).sublime-keymap'))),
+                self.get_file_content(self.get_static('PackageChecker (Windows).sublime-keymap'))),
             'OSX': jsonc.loads(
-                self.get_file_content(self.get_static('Default (OSX).sublime-keymap')))
+                self.get_file_content(self.get_static('PackageChecker (OSX).sublime-keymap')))
         }
 
         for binding in pck_keymaps:

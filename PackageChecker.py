@@ -106,7 +106,7 @@ def parse_args(args=None):
 
     parser.add_argument('path', nargs="?", help='Path (or URL) to the package to check.')
     parser.add_argument('-p', '--pull-request', action='store_true', help="It's a URL to a pull "
-                                                                          "request")
+                                                                          "request. Currently not working")
     parser.add_argument('-q', '--quiet', action="store_true", help='Output the strict minimum '
                                                                    '(fails and warning)')
     parser.add_argument('-i', '--interactive', action='store_true', help="Run the test "
