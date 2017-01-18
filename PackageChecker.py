@@ -12,13 +12,13 @@ import shutil
 sys.path.append(os.path.join(os.path.dirname(__file__)))
 
 try:
-    from .checkers import CHECKERS
+    from .checkers import CHECKERS, Checker
     from .get_package_infos import get_package_infos
     from .functions import *
     from .constants import *
     from .pyperclip import copy as pyperclip_sublime_copy
 except SystemError:
-    from checkers import CHECKERS
+    from checkers import CHECKERS, Checker
     from get_package_infos import get_package_infos
     from functions import *
     from constants import *
@@ -79,6 +79,7 @@ def check(args):
 
     sys.path.append(os.path.join(os.path.dirname(__file__)))
     reset = True
+
     for checker_name in CHECKERS:
         if checker_name in ignored_checkers:
             continue
@@ -95,10 +96,10 @@ def check(args):
         Checker(path, infos, is_pull_request).run()
 
     sys.path.pop()
-
     return Checker.output(format=output_format)
 
 def parse_args(args=None):
+
     parser = argparse.ArgumentParser(prog="PackageChecker",
                                      description="Check your Sublime Text Packages really simply",
                                      fromfile_prefix_chars='@')

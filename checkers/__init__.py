@@ -7,8 +7,8 @@ from functions import *
 import jsonc
 import textwrap
 
-CHECKERS = map(lambda item: os.path.splitext(os.path.basename(item))[0],
-               glob.glob('checkers/check_*.py'))
+CHECKERS = list(map(lambda item: os.path.splitext(os.path.basename(item))[0],
+               glob.glob(os.path.dirname(__file__) + os.path.sep + '/check_*.py')))
 
 class Renderer:
 
@@ -98,7 +98,7 @@ class Checker:
         return self.is_folder(path)
 
     def get_file_content(self, file_name):
-        with open(self.abs_path(file_name), 'r') as fp:
+        with open(self.abs_path(file_name), 'r', encoding='utf-8') as fp:
             return fp.read()
 
     def glob_folders(self, **kwargs):
