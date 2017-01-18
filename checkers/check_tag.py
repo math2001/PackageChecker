@@ -14,4 +14,4 @@ class CheckTag(Checker):
         if len(self.glob_files(base_path='.git/refs/tags')) == 0:
             self.fail('You need to create at least one tag',
                       "Hasn't found any in the last {} commits".format(self.depth),
-                      "Add --depth 0 to clone every commits")
+                      "Add --depth 0 to clone every commits (and --fresh to not use the cache)")

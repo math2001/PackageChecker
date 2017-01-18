@@ -69,6 +69,7 @@ class Checker:
         self.name = infos.get('name')
         self.is_pull_request = is_pull_request
         self.support_st2 = infos.get('support_st2', False)
+        self.depth = infos['depth']
 
     @staticmethod
     def reset():
