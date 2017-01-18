@@ -7,10 +7,10 @@
  ☐ explain ST interface in README
  ☐ [keymaps] compare all the files and check that they're different.
  ☐ fix bug when cloning an unexisting repository
- ☐ output in markdown format
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
+ ✔ output in markdown format @done Wed 18 Jan 2017 at 13:36
  ✔ add flag: --st3-only (actually added --support-st2) @done Wed 18 Jan 2017 at 09:10
  ✔ check tags @done Tue 17 Jan 2017 at 10:59
  ✔ licence @done Sun 15 Jan 2017 at 19:07
